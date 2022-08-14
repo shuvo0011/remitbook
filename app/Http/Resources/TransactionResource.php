@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Traits\OwnBankInfo;
 use App\Http\Traits\TransactionAccepted\BankDepositTransactionDestinationFinding;
 use App\Http\Traits\TransactionAccepted\CashTransactionDestinationFinding;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionResource extends JsonResource
 {
-    use CashTransactionDestinationFinding, BankDepositTransactionDestinationFinding;
+    use CashTransactionDestinationFinding, BankDepositTransactionDestinationFinding,OwnBankInfo;
     /**
      * Transform the resource into an array.
      *
@@ -41,13 +42,13 @@ class TransactionResource extends JsonResource
 
 
         if ($trnTp == 'C') { // cash transaction 
-            return $this->findOutCashTransactionDestination($RECEIVER_BANK, $RECEIVER_BANK_BRANCH, $RECEIVER_SUB_COUNTRY_LEVEL_2, $RECIEVER_BANK_BR_ROUTING_NUMBER, $AGENT_CODE, $trnTp);
+
+            return $this->ownBankCode();
+            // return $this->findOutCashTransactionDestination($RECEIVER_BANK, $RECEIVER_BANK_BRANCH, $RECEIVER_SUB_COUNTRY_LEVEL_2, $RECIEVER_BANK_BR_ROUTING_NUMBER, $AGENT_CODE, $trnTp);
         } else { // account-credit transaction
 
            // dd($RECEIVER_BANK);
             return $this->findOutBankDepositTransactionDestination($RECEIVER_BANK, $RECEIVER_BANK_BRANCH, $RECEIVER_SUB_COUNTRY_LEVEL_2, $RECIEVER_BANK_BR_ROUTING_NUMBER, $AGENT_CODE, $trnTp);
-            
-       
         }
     }
 }
